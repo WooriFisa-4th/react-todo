@@ -1,23 +1,39 @@
 
 import React, { useEffect, useState } from 'react'
 import { TODO_CATEGORY_ICON } from '@/constants/icon'
-import { PRIORITY_COLOR } from '../../constants/priority-color';
+import { PRIORITY_COLOR } from '@/constants/priority-color';
 import { v4 as uuidv4 } from 'uuid';
+import { useTodoContext, useTodoDispatchContext } from '@/contexts/TodoContext';
 
-const TodoForm = ({onAddOrUpdate, onClose, children, todo}) => {
+const TodoForm = ({onClose, children, todo}) => {
     const [title, setTitle] = useState('');
     const [summary, setSummary] = useState('');
     const [category, setCategory] = useState('TODO');
     const [isDisabled, setIsDisabled] = useState(false);
     const [priority, setPriority] = useState('1');
-  
     const isNewTodoForm = () => children.endsWith('등록') ? true : false;
+    
+    const dispatch = useTodoDispatchContext();
+    const {sortByPriorityFlag} = useTodoContext();
 
     const addOrUpdateHandler = () => {
         if(isNewTodoForm(children)) {
             const newIdx = uuidv4();
             const createdAt = new Date().toISOString();
-            onAddOrUpdate(newIdx, title, summary, category, priority, createdAt);
+            const newTodoItem = {
+                id: newIdx,
+                title: title,
+                summary: summary,
+                category: category,
+                priority: priority,
+                createdAt: createdAt
+            }
+            dispatch({type: 'ADD', newTodo: newTodoItem});
+            if(sortByPriorityFlag) {
+                dispatch({type: 'SORTBYPRIORITY'});
+            } else {
+                dispatch({type: 'SORTBYCREATEAT'});
+            }
         } else {
             const updateTodoItem = {
                 id: todo.id,
@@ -27,7 +43,7 @@ const TodoForm = ({onAddOrUpdate, onClose, children, todo}) => {
                 priority: priority,
                 createdAt: todo.createdAt
             }
-            onAddOrUpdate(updateTodoItem);
+            dispatch({type: 'UPDATE', updateTodo: updateTodoItem});
         }
         onClose();
     }

@@ -1,37 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useTodoContext, useTodoDispatchContext } from '@/contexts/TodoContext';
+
 import TodoItem from './TodoItem'
 
-const TodoBody = ({todos, setData, onUpdate, onDelete, filter}) => {
-    const [sortByPriorityFlag, setSortByPriorityFlag] = useState(false);
-
+const TodoBody = () => {
+    const {todos, sortByPriorityFlag} = useTodoContext();
+    const dispatch = useTodoDispatchContext();
     useEffect(() => {
         if(sortByPriorityFlag) {
-            // 우선순위로 정렬
-            console.log('sortByPriorityFlag', sortByPriorityFlag);
-            const sortedTodos = [...todos].sort((a, b) => a.priority - b.priority);
-            setData(sortedTodos);
+            dispatch({type: 'SORTBYPRIORITY'});
         } else {
-            // 최신순 
-            console.log('sortByPriorityFlag', sortByPriorityFlag);
-            const sortedTodos = [...todos].sort((a, b) => a.createdAt > b.createdAt ? -1 : 1);
-            setData(sortedTodos);
+            dispatch({type: 'SORTBYCREATEAT'});
         }
     }, [sortByPriorityFlag]);
 
     return (
         <ul className='px-0 my-8'>
-            <button 
-                className={`w-1/4 p-2 border-[1px] border-gray-300 ${sortByPriorityFlag ? 'bg-gray-200' : 'bg-white'} rounded`} 
-                onClick={() => setSortByPriorityFlag(!sortByPriorityFlag)}>
-                    우선순위로 정렬
-            </button>
+            <div className='flex justify-between'>
+                <button 
+                    className={`w-1/4 p-2 border-[1px] border-gray-300 ${sortByPriorityFlag ? 'bg-gray-200' : 'bg-white'} rounded`} 
+                    onClick={() => dispatch({type: 'SORTBYPRIORITYFLAG'})}>
+                        우선순위로 정렬
+                </button>
+                <button 
+                    className={`w-1/4 p-2 border-[3px] border-gray-300 bg-white text-red-600 rounded`} 
+                    onClick={() => dispatch({type: 'DELETEALL'})}>
+                        모두 지우기
+                </button>
+            </div>
             {todos.map((todo) => 
                 <TodoItem 
                     key={todo.id} 
                     todo={todo} 
-                    onUpdate={onUpdate}
-                    onDelete={onDelete} 
-                    filter={filter}
                 />
             )}
         </ul>
