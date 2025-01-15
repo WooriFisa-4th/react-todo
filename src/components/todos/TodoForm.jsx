@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { TODO_CATEGORY_ICON } from '@/constants/icon'
+import { PRIORITY_COLOR } from '../../constants/priority-color';
 import { v4 as uuidv4 } from 'uuid';
 
 const TodoForm = ({onAddOrUpdate, onClose, children, todo}) => {
@@ -8,36 +9,27 @@ const TodoForm = ({onAddOrUpdate, onClose, children, todo}) => {
     const [summary, setSummary] = useState('');
     const [category, setCategory] = useState('TODO');
     const [isDisabled, setIsDisabled] = useState(false);
+    const [priority, setPriority] = useState('1');
   
     const isNewTodoForm = () => children.endsWith('등록') ? true : false;
 
     const addOrUpdateHandler = () => {
         if(isNewTodoForm(children)) {
             const newIdx = uuidv4();
-            onAddOrUpdate(newIdx, title, summary, category)
+            const createdAt = new Date().toISOString();
+            onAddOrUpdate(newIdx, title, summary, category, priority, createdAt);
         } else {
             const updateTodoItem = {
                 id: todo.id,
                 title: title,
                 summary: summary,
                 category: category,
+                priority: priority,
+                createdAt: todo.createdAt
             }
             onAddOrUpdate(updateTodoItem);
         }
         onClose();
-    }
-
-    const addTodo = () => {
-      const newIndex = uuidv4();
-      const newTodoItem = {
-          id: newIndex,
-          title: title,
-          summary: summary,
-          category: category,
-      };
-      const newTodoList = [...todos, newTodoItem];
-      setData(newTodoList);
-      setModal();
     }
 
     useEffect(() => {
@@ -87,6 +79,19 @@ const TodoForm = ({onAddOrUpdate, onClose, children, todo}) => {
                         <option value='TODO'>{TODO_CATEGORY_ICON.TODO} To do</option>
                         <option value='PROGRESS'>{TODO_CATEGORY_ICON.PROGRESS} On progress</option>
                         <option value='DONE'>{TODO_CATEGORY_ICON.DONE} Done</option>
+                    </select>
+
+                    <label className='block mb-2 text-xl text-white' htmlFor='priority'>Priority</label>
+                    <select 
+                        onChange={(e) => setPriority(e.target.value)} 
+                        className={`w-full p-2 border-[1px] border-gray-300 bg-gray-200 rounded ${PRIORITY_COLOR[priority]}`} 
+                        id='priority'
+                        value={priority}
+                    >
+                        <option value='1'>1st</option>
+                        <option value='2'>2nd</option>
+                        <option value='3'>3rd</option>
+                        <option value='4'>4th</option>
                     </select>
                 </div>
                 <p id='block-message' className='text-xl text-red-500 m-4'></p>

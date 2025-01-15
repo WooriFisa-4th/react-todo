@@ -7,11 +7,13 @@ import IconButton from '../ui/IconButton';
 import Modal from '../ui/Modal';
 
 import { TODO_CATEGORY_ICON } from '@/constants/icon';
+import { PRIORITY_COLOR } from '@/constants/priority-color';
 
 // eslint-disable-next-line react/prop-types
-const TodoItem = ({todo, onUpdate, onDelete , filter}) => {
+const TodoItem = ({todo, onUpdate , onDelete , filter}) => {
+  console.log('TodoItem', todo);
   // eslint-disable-next-line react/prop-types
-  const {id, title, summary, category} = todo;
+  const {id, title, summary, category, priority} = todo;
   const [modal, setModal] = useState(false);
   const isFiltered = filter !== 'all';
 
@@ -19,10 +21,13 @@ const TodoItem = ({todo, onUpdate, onDelete , filter}) => {
 
   return (
     <li className="flex gap-4 justify-between my-4 py-4 px-4 border-[1px] bg-gray-700 rounded-md shadow-xl">
-        <div>
+        <div className='w-full'>
             <span className="text-lg font-medium text-gray-300">{ TODO_CATEGORY_ICON[category] }</span>
             <div>
-                <h2 data-test="title" className="mb-0 text-lg font-bold text-gray-100 uppercase">{ title }</h2>
+              <div className='flex justify-between'>
+                <h2 data-test="title" className=" mb-0 text-lg font-bold text-gray-100 uppercase">{ title }</h2>
+                <h2 data-test="title" className={` mb-0 text-lg font-bold ${PRIORITY_COLOR[priority]} uppercase`}>{ priority } 순위</h2>
+              </div>
                 <p className="mt-2 text-base text-gray-200">{ summary }</p>
             </div>
         </div>
