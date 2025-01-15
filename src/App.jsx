@@ -28,6 +28,20 @@ function App() {
   const [data, setData] = useState(dummyData);
   const [filter, setFilter] = useState('all');
 
+  const addTodoHandler = (id, title, summary, category) => {
+    const addTodo = {
+      id: id,
+      title: title,
+      summary: summary,
+      category: category
+    };
+    setData([...data, addTodo]);
+  }
+
+  const updateTodoHandler = (updateTodo) => setData(data.map(todoItem => todoItem.id === updateTodo.id ? updateTodo : todoItem));
+
+  const deleteTodoHandler = (id) => setData(data.filter(todo => todo.id !== id));
+
   return (
     <>
     {/* // About children prop - 
@@ -42,8 +56,8 @@ function App() {
         </header>
 
         <section className='max-w-xl m-4 mx-auto'>
-          <TodoHeader todos={data} setData={setData} setFilter={setFilter}/>
-          <TodoBody todos={data} setData={setData} filter={filter}/>
+          <TodoHeader onAdd={addTodoHandler} setFilter={setFilter}/>
+          <TodoBody todos={data} onUpdate={updateTodoHandler} onDelete={deleteTodoHandler} filter={filter}/>
         </section>
 
       </DefaultLayout>    

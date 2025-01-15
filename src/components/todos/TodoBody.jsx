@@ -1,15 +1,15 @@
 import TodoItem from './TodoItem'
 
-const TodoBody = ({todos, setData, filter}) => {
+const TodoBody = ({todos, onUpdate, onDelete, filter}) => {
     
     return (
     <ul className='px-0 my-8'>
         {todos.map((todo) => 
             <TodoItem 
                 key={todo.id} 
-                todos={todos} 
                 todo={todo} 
-                setData={setData} 
+                onUpdate={onUpdate}
+                onDelete={onDelete} 
                 filter={filter}
             />
         )}

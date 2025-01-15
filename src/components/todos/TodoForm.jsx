@@ -3,12 +3,30 @@ import React, { useEffect, useState } from 'react'
 import { TODO_CATEGORY_ICON } from '@/constants/icon'
 import { v4 as uuidv4 } from 'uuid';
 
-const TodoForm = ({setModal, setData, todos}) => {
+const TodoForm = ({onAddOrUpdate, onClose, children, todo}) => {
     const [title, setTitle] = useState('');
     const [summary, setSummary] = useState('');
     const [category, setCategory] = useState('TODO');
     const [isDisabled, setIsDisabled] = useState(false);
   
+    const isNewTodoForm = () => children.endsWith('등록') ? true : false;
+
+    const addOrUpdateHandler = () => {
+        if(isNewTodoForm(children)) {
+            const newIdx = uuidv4();
+            onAddOrUpdate(newIdx, title, summary, category)
+        } else {
+            const updateTodoItem = {
+                id: todo.id,
+                title: title,
+                summary: summary,
+                category: category,
+            }
+            onAddOrUpdate(updateTodoItem);
+        }
+        onClose();
+    }
+
     const addTodo = () => {
       const newIndex = uuidv4();
       const newTodoItem = {
@@ -39,7 +57,7 @@ const TodoForm = ({setModal, setData, todos}) => {
       
     return (
         <>
-            <h3 className="text-3xl text-red-200">할일 등록</h3>
+            <h3 className="text-3xl text-red-200">{ children }</h3>
             <form className='my-2'>
                 <div>
                     <label className='block mb-2 text-xl text-white' htmlFor='title'>Title</label>
@@ -74,7 +92,7 @@ const TodoForm = ({setModal, setData, todos}) => {
                 <p id='block-message' className='text-xl text-red-500 m-4'></p>
                 <div className='flex justify-end gap-4'>
                     <button 
-                        onClick={setModal} 
+                        onClick={onClose} 
                         className='text-xl text-white' 
                         type='button'
                     >
@@ -82,12 +100,12 @@ const TodoForm = ({setModal, setData, todos}) => {
                     </button>
                     <button 
                         id="add" 
-                        onClick={addTodo} 
+                        onClick={addOrUpdateHandler} 
                         disabled={isDisabled}
                         className={`p-2 rounded ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 cursor-pointer'}`}
                         type='button'
                     >
-                        Add
+                        {isNewTodoForm(children) ? 'Add' : 'Update'}
                     </button>
                 </div>
             </form>
